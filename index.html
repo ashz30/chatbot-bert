@@ -1,0 +1,132 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!-- https://code.tutsplus.com/tutorials/how-to-create-a-simple-web-based-chat-application--net-5931 -->
+<head>
+<title>Chat - Customer Module</title>
+<link type="text/css" rel="stylesheet" href="style.css" />
+</head>
+ 
+ 
+<div id="wrapper">
+    <div id="menu">
+        <p class="welcome">Welcome User, <b></b></p>
+        <p class="logout"><a id="exit" href="#">Exit Chat</a></p>
+        <div style="clear:both"></div>
+    </div>
+     
+   <div id="chatbox">
+<p id="p1"></p>
+
+</div>
+
+
+
+	
+
+
+     
+    <form name="message" action="">
+        <input name="usermsg" type="text" id="usermsg" size="63" />
+        <input name="submitmsg" type="submit"  id="submitmsg" value="Send" />
+    </form>
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript">
+//global variable - chat transcript
+chat = ""
+bpusername = "admin"
+bppassword = "admin123"
+baseurl = "http://BP0300:8181/ws/ChatbotProcessorMaster";
+
+// jQuery Document
+$(document).ready(function(){
+ 	//If user wants to end session
+	$("#exit").click(function(){
+		var exit = confirm("Are you sure you want to end the session?");
+		if(exit==true){window.close(); }		
+	});
+	
+//If user submits the form
+	$("#submitmsg").click(function(){	
+		var clientmsg = $("#usermsg").val();
+		chat = chat.concat("User:",clientmsg,"<br>");
+		document.getElementById("usermsg").value = '';
+		var p1 = document.getElementById("p1");
+		p1.innerHTML= chat; 
+	
+		
+		setTimeout(function() { data = WSProcessMaster(clientmsg);
+		chat = chat.concat("Jose Garcia DW:",data,"<br>");
+		p1.innerHTML= chat;  }, 10);
+		
+		//call BP WS
+		
+		
+		return false;
+	});	
+
+function WSProcessMaster(query) 
+{
+
+
+// send soap request
+
+
+           var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open('POST', baseurl, false);
+
+            // build SOAP request
+            var sr =
+                '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:blueprism:webservice:chatbotprocessormaster">' +
+   '<soapenv:Header/>' +
+   '<soapenv:Body>' +
+      '<urn:ChatbotProcessorMaster>' +
+         '<urn:user>user</urn:user>' +
+         '<urn:query>' + query + '</urn:query>' + 
+         '<urn:session>#placeholder#</urn:session>' +
+      '</urn:ChatbotProcessorMaster>' +
+   '</soapenv:Body>' +
+'</soapenv:Envelope>';
+
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        //alert(xmlhttp.responseText);
+                        // alert('done. use firebug/console to see network response');
+                    }
+                }
+            }
+            // Send the POST request
+			var token = bpusername.concat(":", bppassword);
+			xmlhttp.setRequestHeader("Authorization", "Basic " + btoa(token));
+            xmlhttp.setRequestHeader('Content-Type', 'text/xml');			
+            xmlhttp.send(sr);
+			
+			//alert(xmlhttp.status);
+			//alert(xmlhttp.responseText);
+			var fullresponse = xmlhttp.responseText;
+			var response  = fullresponse.match(new RegExp("<response>" + "(.*)" + "</response>"));
+			
+			
+			//alert (response[1]);
+            // send request
+            // ...
+
+// soap request end 
+
+
+
+return response[1];
+}
+
+
+
+
+	
+});
+
+
+</script>
+
+</script>
+</body>
+</html>
