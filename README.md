@@ -19,7 +19,7 @@ Run Python as flask web service
 
 Import BP release.  
 
-Open popup.html, maake sure end point is valid
+Open index.html, maake sure end point is valid
 
 
 Flow  HTML Page <-> BP SOAP Web Service <-> Python Rest Webservice
